@@ -1,0 +1,42 @@
+﻿FUNCTION_BLOCK chat
+VAR_INPUT
+    Edad      REAL; (* RANGE(0 .. 65) *) 
+    Educacion REAL; (* RANGE(0 .. 4) *) 
+END_VAR
+VAR_OUTPUT
+    Nivel_Tecnologico REAL; (* RANGE(0 .. 4) *) 
+END_VAR
+FUZZIFY Edad
+    TERM Adolescente := (0, 1) (15, 1) (27, 0) ;
+    TERM Joven := (15, 0) (30, 1) (40, 1) (50, 0);
+    TERM Adulto := (40, 0) (55, 1) (65, 1) ;
+END_FUZZIFY
+FUZZIFY Educacion
+    TERM Primaria := (0, 1) (0.5, 1) (1.5, 0) ;
+    TERM Secundaria := (0.5, 0) (1.5, 1) (2.5, 1) (3.5, 0) ;
+    TERM Terciaria := (2.5, 0) (3, 1) (4, 1) ;
+END_FUZZIFY
+DEFUZZIFY Nivel_Tecnologico
+    TERM Bajo := (0, 1) (2, 0) ;
+    TERM Medio := (0, 0) (2, 1) (4,0);
+    TERM Alto := (2, 0) (4, 1) ;
+END_DEFUZZIFY
+DEFUZZIFY valve
+    METHOD: COG;
+END_DEFUZZIFY
+RULEBLOCK first
+
+AND:MIN;
+ACT:MIN;
+ACCU:MAX;
+RULE 0: IF (Edad IS Adolescente) AND (Educacion IS Primaria) THEN (Nivel_Tecnologico IS Medio);
+RULE 1: IF (Edad IS Adolescente) AND (Educacion IS Secundaria) THEN (Nivel_Tecnologico IS Medio);
+RULE 2: IF (Edad IS Adolescente) AND (Educacion IS Terciaria) THEN (Nivel_Tecnologico IS Alto);
+RULE 3: IF (Edad IS Joven) AND (Educacion IS Primaria) THEN (Nivel_Tecnologico IS Bajo);
+RULE 4: IF (Edad IS Joven) AND (Educacion IS Secundaria) THEN (Nivel_Tecnologico IS Alto);
+RULE 5: IF (Edad IS Joven) AND (Educacion IS Terciaria) THEN (Nivel_Tecnologico IS Alto);
+RULE 6: IF (Edad IS Adulto) AND (Educacion IS Primaria) THEN (Nivel_Tecnologico IS Bajo);
+RULE 7: IF (Edad IS Adulto) AND (Educacion IS Secundaria) THEN (Nivel_Tecnologico IS Medio);
+RULE 8: IF (Edad IS Adulto) AND (Educacion IS Terciaria) THEN (Nivel_Tecnologico IS Medio);
+END_RULEBLOCK
+END_FUNCTION_BLOCK
